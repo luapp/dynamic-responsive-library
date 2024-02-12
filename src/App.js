@@ -1,30 +1,41 @@
-import { useEffect } from 'react';
-import AppCss from './App.module.css';
+import React, { useEffect } from "react"
+import styles from "./App.module.css"
 
 function App() {
-
-	useEffect(() => {
-		const handleResize = () => {
-			console.log("--------------------------------------------------------------");
-			console.log('window.innerWidth:', window.innerWidth);
-			console.log('window.innerHeight:', window.innerHeight);
-			console.log('window.devicePixelRatio:', window.devicePixelRatio);
-			//detect zoom level of the browser
-			let zoomLevel = window.devicePixelRatio;
-			console.log('zoomLevel:', zoomLevel);
-			console.log("--------------------------------------------------------------");
+  	useEffect(() => {
+    	const setTextSize = () => {
+      		const textElement = document.querySelector(`.${styles.text}`)
+			const userAgentString = navigator.userAgent
+			const viewport = window.devicePixelRatio
+			const safariviewport = (window.innerWidth / window.outerWidth)
+			let fontSize = 100;
+			let chromeAgent = userAgentString.indexOf("Chrome") > -1; 
+			let safariAgent = userAgentString.indexOf("Safari") > -1; 
+			if ((chromeAgent) && (safariAgent)) {
+				safariAgent = false
+			}
+			console.log("viewport native from browser: " + viewport)
+			console.log("custom viewport for safari: " + safariviewport)
+			console.log("safariAgent: " + safariAgent)
+			if (safariAgent) {
+				fontSize = fontSize * safariviewport
+      			textElement.style.fontSize = `${fontSize}px`;
+			} else {
+				fontSize = fontSize / viewport
+      			textElement.style.fontSize = `${fontSize}px`;
+			}
 		}
-		window.addEventListener('resize', handleResize);
-		return () => window.removeEventListener('resize', handleResize);
-	}
-	, [])
-
-  	return (
-		<div className={AppCss.App}>
-			<h2 className={AppCss.NoMargin}>Static H2</h2>
-			<h2 className={AppCss.NoMargin}>Dynamic H2</h2>
-			<div className={AppCss.div}></div>
-		</div>
+    	setTextSize();
+    	window.addEventListener('resize', setTextSize);
+    	return () => {
+        	window.removeEventListener('resize', setTextSize);
+    	}
+	}, [])
+	
+	return (
+    	<div className={styles.App}>
+     		<h1 className={styles.text}>Hello React !</h1>
+    	</div>
   	)
 }
 
